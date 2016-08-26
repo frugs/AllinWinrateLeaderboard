@@ -20,7 +20,7 @@ def wsgi_app(environ, start_response):
 
     preview_leaderboard = ""
     for rank, name, percentile in ranked_leaderboard[:3]:
-        preview_leaderboard += "{}. {} {} \n".format(rank, name, percentile)
+        preview_leaderboard += "{}. {} {} ".format(rank, name, percentile)
 
     response_body = template.render({
         "preview_leaderboard": preview_leaderboard,
