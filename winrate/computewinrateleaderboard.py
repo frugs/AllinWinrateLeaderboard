@@ -32,24 +32,15 @@ def ncr(n, r):
 def binomial(x, n, p):
     return ncr(n, x) * pow(p, x) * pow(1 - p, n - x)
 
-players = []
 
-file = open("wins.txt")
-for line in file:
-    split_line = line.split(" ")
-    name = split_line[0]
-    wins = int(split_line[1])
-    played = int(split_line[2])
-    losses = played - wins
+def compute_win_rate_leaderboard(player_wins):
+    leaderboard = []
 
-    if played == 0:
-        continue
+    for name, wins, played in player_wins:
+        if played == 0:
+            continue
 
-    probability = 1 - arithmetic_sum(wins, lambda x: binomial(x, played, 0.5))
-    players.append((name, probability))
+        probability = 1 - arithmetic_sum(wins, lambda x: binomial(x, played, 0.5))
+        leaderboard.append((name, probability))
 
-file.close()
-
-sorted_players = sorted(players, key=lambda x: x[1])
-for player in sorted_players:
-    print(player[0], "{:.2f}%".format(player[1] * 100))
+    return sorted(leaderboard, key=lambda x: x[1])
