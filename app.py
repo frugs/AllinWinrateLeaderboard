@@ -18,7 +18,14 @@ def wsgi_app(environ, start_response):
                           for index, (name, probability)
                           in enumerate(leaderboard)]
 
-    response_body = template.render({"leaderboard": ranked_leaderboard})
+    preview_leaderboard = ""
+    for rank, name, percentile in ranked_leaderboard[:3]:
+        preview_leaderboard += "{}. {} {} \n".format(rank, name, percentile)
+
+    response_body = template.render({
+        "preview_leaderboard": preview_leaderboard,
+        "leaderboard": ranked_leaderboard
+    })
 
     yield response_body.encode()
 
