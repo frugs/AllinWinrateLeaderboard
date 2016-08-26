@@ -1,0 +1,30 @@
+@require(leaderboard)
+
+<html>
+
+<head>
+    <title>All-Inspiration Win Rate Leaderboard</title>
+</head>
+
+<body>
+    <table>
+        <tr>
+            <th>Rank</th>
+            <th>Player</th>
+            <th>Win Rate Percentile</th>
+        </tr>
+
+        @for rank, name, percentile in leaderboard:
+            <tr>
+                <td>@rank</td>
+                <td>@name</td>
+                <td>@percentile</td>
+            </tr>
+
+        @end
+
+    </table>
+
+</body>
+
+</html>

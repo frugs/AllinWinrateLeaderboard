@@ -1,19 +1,25 @@
-import io
+from wheezy.template.engine import Engine
+from wheezy.template.ext.core import CoreExtension
+from wheezy.template.loader import FileLoader
 import winrate
 
 
 def wsgi_app(environ, start_response):
+    status = '200 OK'
+    response_headers = [('Content-type', 'text/html')]
+    start_response(status, response_headers)
+
+    engine = Engine(loader=FileLoader(['']), extensions=[CoreExtension()])
+    template = engine.get_template('main_template.html')
+
     player_wins = winrate.download_current_player_wins()
     leaderboard = winrate.compute_win_rate_leaderboard(player_wins)
+    ranked_leaderboard = [(str(index + 1), name, "{:.2f}%".format(probability * 100))
+                          for index, (name, probability)
+                          in enumerate(leaderboard)]
 
-    str_buffer = io.StringIO()
-    for name, probability in leaderboard:
-        print(name, "{:.2f}%".format(probability * 100), file=str_buffer)
+    response_body = template.render({"leaderboard": ranked_leaderboard})
 
-    status = '200 OK'
-    response_headers = [('Content-type', 'text/plain')]
-    start_response(status, response_headers)
-    response_body = str_buffer.getvalue()
     yield response_body.encode()
 
 if __name__ == '__main__':
