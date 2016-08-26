@@ -7,8 +7,8 @@ def wsgi_app(environ, start_response):
     leaderboard = winrate.compute_win_rate_leaderboard(player_wins)
 
     str_buffer = io.StringIO()
-    for name, winrate_percentile in leaderboard:
-        print(name, winrate_percentile, file=str_buffer)
+    for name, probability in leaderboard:
+        print(name, "{:.2f}%".format(probability * 100), file=str_buffer)
 
     status = '200 OK'
     response_headers = [('Content-type', 'text/plain')]
