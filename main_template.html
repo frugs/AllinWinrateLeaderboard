@@ -6,20 +6,35 @@
     <title>All-Inspiration Win Rate Leaderboard</title>
     <meta name="description" content=" @preview_leaderboard ">
     <meta name="author" content="All-Inspiration Win Rate Leaderboard">
+
+     <link rel="stylesheet" type="text/css" href="static/main.css">
 </head>
 
 <body>
-    <table>
+    <div class="header">
+        <img id="logo"
+             src="http://d1mt9jmphk9kik.cloudfront.net/allinspirationsc2/image1440372391.png"
+             title="All-Inspiration"
+             alt="All-Inspiration">
+
+        <h1>
+            <span class="allin-red">Win Rate</span> Leaderboard
+        </h1>
+    </div>
+
+    <br>
+
+    <table class="center">
         <tr>
-            <th>Rank</th>
+            <th class="allin-red">Rank</th>
             <th>Player</th>
             <th>Win Rate Percentile</th>
         </tr>
 
         @for rank, name, percentile in leaderboard:
             <tr>
-                <td>@rank</td>
-                <td>@name</td>
+                <td class="allin-red">@rank</td>
+                <td class="player">@name</td>
                 <td>@percentile</td>
             </tr>
 

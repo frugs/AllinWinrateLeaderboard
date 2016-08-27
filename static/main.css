@@ -1,3 +1,35 @@
-table {
-    font-family: Verdana, sans-serif
+body {
+    background-color: #A0A0A0;
+    background: linear-gradient(to right, #D0D0D0, #A0A0A0, #A0A0A0, #D0D0D0);
+
+    color: white;
+    font-family: Verdana, sans-serif;
+    margin: 0;
+}
+
+h1 {
+    margin-left: 14px;
+}
+
+.header {
+    background: #404040;
+    background: linear-gradient(to bottom right, #404040, #404040, #606060);
+    width: 100%;
+    height: 150px;
+}
+
+table.center {
+    margin: 0px auto;
+}
+
+td {
+    text-align: center;
+}
+
+td.player {
+    text-align: left;
+}
+
+.allin-red {
+    color: #A91C21;
 }
