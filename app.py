@@ -54,26 +54,49 @@ def timezone_app(environ, start_response):
     if not remote_tzs:
         remote_tzs = [pytz.timezone('UTC')]
 
-    ip = environ['REMOTE_ADDR']
-    local_tz = timezone.determine_local_timezone(ip)
+    local_tzs = []
+    if 'local_tz' in query_params:
+        candidate_tz_str = query_params['local_tz'][0]
+        local_tzs = timezone.parse_timezone_name(naive_datetime, candidate_tz_str)
+
+    if not local_tzs:
+        local_tzs = [pytz.timezone('UTC')]
 
     date_format = "%d %b %H:%M %Z%z"
 
     result = []
-    for remote_tz in remote_tzs:
-        remote_datetime = remote_tz.localize(naive_datetime)
-        local_datetime = local_tz.normalize(remote_datetime.astimezone(local_tz))
+    for local_tz in local_tzs:
+        for remote_tz in remote_tzs:
+            remote_datetime = remote_tz.localize(naive_datetime)
+            local_datetime = local_tz.normalize(remote_datetime.astimezone(local_tz))
 
-        remote_time = remote_datetime.strftime(date_format)
-        local_time = local_datetime.strftime(date_format)
+            remote_time = remote_datetime.strftime(date_format)
+            local_time = local_datetime.strftime(date_format)
 
-        result.append(remote_time + " " + remote_tz.zone + " is " + local_time + " " + local_tz.zone)
+            result.append(remote_time + " " + remote_tz.zone + " is " + local_time + " " + local_tz.zone)
 
     engine = Engine(loader=FileLoader(['']), extensions=[CoreExtension()])
     template = engine.get_template('timezone_template.html')
 
+    url = environ["HTTP_HOST"] + environ["PATH_INFO"]
+
+    result_1 = result[0]
+
+    if len(result) >= 2:
+        result_2 = result[1]
+    else:
+        result_2 = ""
+
+    if len(result) >= 3:
+        result_3 = result[2]
+    else:
+        result_3 = ""
+
     response_body = template.render({
-        "result_preview": result[0],
+        "url": url,
+        "result_1": result_1,
+        "result_2": result_2,
+        "result_3": result_3,
         "result": result
     })
 
