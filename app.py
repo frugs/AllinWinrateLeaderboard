@@ -62,7 +62,7 @@ def timezone_app(environ, start_response):
     if not local_tzs:
         local_tzs = [pytz.timezone('UTC')]
 
-    date_format = "%d %b %H:%M %Z"
+    date_format = "%H:%M %Z"
 
     result = []
     for local_tz in local_tzs:
@@ -78,8 +78,6 @@ def timezone_app(environ, start_response):
     engine = Engine(loader=FileLoader(['']), extensions=[CoreExtension()])
     template = engine.get_template('timezone_template.html')
 
-    url = environ["HTTP_HOST"] + environ["PATH_INFO"]
-
     result_1 = result[0]
 
     if len(result) >= 2:
@@ -93,7 +91,7 @@ def timezone_app(environ, start_response):
         result_3 = ""
 
     response_body = template.render({
-        "url": url,
+        "today": datetime.datetime.now().strftime("%d %b"),
         "result_1": result_1,
         "result_2": result_2,
         "result_3": result_3,
