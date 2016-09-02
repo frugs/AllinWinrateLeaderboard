@@ -62,7 +62,7 @@ def timezone_app(environ, start_response):
     if not local_tzs:
         local_tzs = [pytz.timezone('UTC')]
 
-    date_format = "%d %b %H:%M %Z%z"
+    date_format = "%d %b %H:%M %Z"
 
     result = []
     for local_tz in local_tzs:
