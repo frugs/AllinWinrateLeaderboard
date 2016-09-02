@@ -13,7 +13,7 @@ import winrate
 
 def winrate_app(environ, start_response):
     status = '200 OK'
-    response_headers = [('Content-type', 'text/html')]
+    response_headers = [('Content-type', 'text/html'), ('Cache-Control', ['no-store', 'must-revalidate'])]
     start_response(status, response_headers)
 
     engine = Engine(loader=FileLoader(['']), extensions=[CoreExtension()])
@@ -85,16 +85,10 @@ def timezone_app(environ, start_response):
     else:
         result_2 = ""
 
-    if len(result) >= 3:
-        result_3 = result[2]
-    else:
-        result_3 = ""
-
     response_body = template.render({
         "today": datetime.datetime.now().strftime("%d %b"),
         "result_1": result_1,
         "result_2": result_2,
-        "result_3": result_3,
         "result": result
     })
 
