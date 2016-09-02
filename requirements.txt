@@ -1,3 +1,4 @@
 azure==0.8.4
 beautifulsoup4
 wheezy.template
+pytz

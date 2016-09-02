@@ -1,10 +1,13 @@
+import cgi
+import datetime
 import re
-import urllib.request
-import json
-import codecs
+
+import pytz
 from wheezy.template.engine import Engine
 from wheezy.template.ext.core import CoreExtension
 from wheezy.template.loader import FileLoader
+
+import timezone
 import winrate
 
 
@@ -36,15 +39,45 @@ def winrate_app(environ, start_response):
 
 def timezone_app(environ, start_response):
     status = '200 OK'
-    response_headers = [('Content-type', 'text/plain')]
+    response_headers = [('Content-type', 'text/html')]
     start_response(status, response_headers)
 
-    geo_response = urllib.request.urlopen("http://freegeoip.net/json/" + environ['REMOTE_ADDR'])
-    geo_info = json.loads(geo_response.read().decode('utf-8'))
+    query_params = cgi.parse_qs(environ.get('QUERY_STRING', ''))
 
-    print(geo_info)
+    naive_datetime = datetime.datetime.now()
 
-    yield geo_info['time_zone'].encode()
+    remote_tzs = []
+    if 'remote_tz' in query_params:
+        candidate_tz_str = query_params['remote_tz'][0]
+        remote_tzs = timezone.parse_timezone_name(naive_datetime, candidate_tz_str)
+
+    if not remote_tzs:
+        remote_tzs = [pytz.timezone('UTC')]
+
+    ip = environ['REMOTE_ADDR']
+    local_tz = timezone.determine_local_timezone(ip)
+
+    date_format = "%d %b %H:%M %Z%z"
+
+    result = []
+    for remote_tz in remote_tzs:
+        remote_datetime = remote_tz.localize(naive_datetime)
+        local_datetime = local_tz.normalize(remote_datetime.astimezone(local_tz))
+
+        remote_time = remote_datetime.strftime(date_format)
+        local_time = local_datetime.strftime(date_format)
+
+        result.append(remote_time + " " + remote_tz.zone + " is " + local_time + " " + local_tz.zone)
+
+    engine = Engine(loader=FileLoader(['']), extensions=[CoreExtension()])
+    template = engine.get_template('timezone_template.html')
+
+    response_body = template.render({
+        "result_preview": result[0],
+        "result": result
+    })
+
+    yield response_body.encode()
 
 
 def not_found_app(environ, start_response):
