@@ -13,7 +13,7 @@ import winrate
 
 def winrate_app(environ, start_response):
     status = '200 OK'
-    response_headers = [('Content-type', 'text/html'), ('Cache-Control', ['no-store', 'must-revalidate'])]
+    response_headers = [('Content-type', 'text/html')]
     start_response(status, response_headers)
 
     engine = Engine(loader=FileLoader(['']), extensions=[CoreExtension()])
@@ -37,73 +37,14 @@ def winrate_app(environ, start_response):
     yield response_body.encode()
 
 
-def timezone_app(environ, start_response):
-    status = '200 OK'
-    response_headers = [('Content-type', 'text/html')]
-    start_response(status, response_headers)
-
-    query_params = cgi.parse_qs(environ.get('QUERY_STRING', ''))
-
-    naive_datetime = datetime.datetime.now()
-
-    remote_tzs = []
-    if 'remote_tz' in query_params:
-        candidate_tz_str = query_params['remote_tz'][0]
-        remote_tzs = timezone.parse_timezone_name(naive_datetime, candidate_tz_str)
-
-    if not remote_tzs:
-        remote_tzs = [pytz.timezone('UTC')]
-
-    local_tzs = []
-    if 'local_tz' in query_params:
-        candidate_tz_str = query_params['local_tz'][0]
-        local_tzs = timezone.parse_timezone_name(naive_datetime, candidate_tz_str)
-
-    if not local_tzs:
-        local_tzs = [pytz.timezone('UTC')]
-
-    date_format = "%H:%M %Z"
-
-    result = []
-    for local_tz in local_tzs:
-        for remote_tz in remote_tzs:
-            remote_datetime = remote_tz.localize(naive_datetime)
-            local_datetime = local_tz.normalize(remote_datetime.astimezone(local_tz))
-
-            remote_time = remote_datetime.strftime(date_format)
-            local_time = local_datetime.strftime(date_format)
-
-            result.append(remote_time + " " + remote_tz.zone + " is " + local_time + " " + local_tz.zone)
-
-    engine = Engine(loader=FileLoader(['']), extensions=[CoreExtension()])
-    template = engine.get_template('timezone_template.html')
-
-    result_1 = result[0]
-
-    if len(result) >= 2:
-        result_2 = result[1]
-    else:
-        result_2 = ""
-
-    response_body = template.render({
-        "today": datetime.datetime.now().strftime("%d %b"),
-        "result_1": result_1,
-        "result_2": result_2,
-        "result": result
-    })
-
-    yield response_body.encode()
-
-
 def not_found_app(environ, start_response):
     start_response('404 NOT_FOUND', [('Content-type', 'text/plain')])
     yield "Not found".encode()
 
 
 ROUTES = [
-    (r'^winrate/?$', winrate_app),
-    (r'^timezone/?$', timezone_app),
-    (r'^timezone/.+$', timezone_app)
+    (r'^$', winrate_app),
+    (r'^winrate/?$', winrate_app)
 ]
 
 
