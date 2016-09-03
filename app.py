@@ -1,19 +1,17 @@
-import cgi
-import datetime
 import re
 
-import pytz
 from wheezy.template.engine import Engine
 from wheezy.template.ext.core import CoreExtension
 from wheezy.template.loader import FileLoader
 
-import timezone
 import winrate
 
 
 def winrate_app(environ, start_response):
     status = '200 OK'
-    response_headers = [('Content-type', 'text/html')]
+    response_headers = [('Content-type', 'text/html'),
+                        ('Cache-Control', 'no-cache'),
+                        ('Cache-Control', 'must-revalidate')]
     start_response(status, response_headers)
 
     engine = Engine(loader=FileLoader(['']), extensions=[CoreExtension()])
