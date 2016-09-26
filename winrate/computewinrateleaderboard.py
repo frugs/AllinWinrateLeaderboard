@@ -1,21 +1,15 @@
 def arithmetic_sum(n, expr):
-    def inner(i, sum_so_far):
-        if i < n:
-            return inner(i + 1, sum_so_far + expr(i))
-        else:
-            return sum_so_far
-
-    return inner(0, 0)
+    sum_so_far = 0
+    for i in range(1, n + 1):
+        sum_so_far = sum_so_far + expr(i)
+    return sum_so_far
 
 
 def arithmetic_product(n, expr):
-    def inner(i, product_so_far):
-        if i <= n:
-            return inner(i + 1, product_so_far * expr(i))
-        else:
-            return product_so_far
-
-    return inner(1, 1)
+    product_so_far = 1
+    for i in range(1, n + 1):
+        product_so_far = product_so_far * expr(i)
+    return product_so_far
 
 
 def factorial(n):
